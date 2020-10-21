@@ -12,10 +12,9 @@ import java.util.concurrent.Future;
 
 /* time used for this project: ~ 18 hours
  * <answerTask1.6>
- *    It's not faster and I kind of expected it because the program isn't really made for parallel running.
- *    Or, maybe I just don't see how to actually make it run faster while parallel.
- *    Also, I was not able to synchronize hasSelectedValue and selecting the Value, so level 2 does not work while parallel.
- *    All in all, I would appreciate it, if we were to get a solution, I'm stuck on this one.
+ *    It's 3x faster and I kind of expected it because I split it into 3 threads
+ *    However, I was not able to synchronize hasSelectedValue and selecting the Value, so level 2 does not work while parallel.
+ *    So I would appreciate it, if we were to get a solution, I'm stuck on this one.
  * </answerTask1.6>
  */
 public class SudokuSolver implements ISodukoSolver {

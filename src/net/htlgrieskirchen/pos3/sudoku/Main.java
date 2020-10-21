@@ -6,7 +6,7 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) {
         SudokuSolver ss = new SudokuSolver();
-        int[][] input = ss.readSudoku(new File("3_sudoku_level2.csv"));
+        int[][] input = ss.readSudoku(new File("2_sudoku_level1.csv"));
         
         
         System.out.println(">--- ORIGINAL ---");
@@ -23,8 +23,8 @@ public class Main {
         
         
         System.out.println("\n>--- BENCHMARK ---");
-        System.out.println("SINGLE    = " + ss.benchmark(output) + "ms");
-        System.out.println("PARALLEL  = " + ss.benchmarkParallel(output) + "ms");
+        System.out.println("SINGLE    = " + ss.benchmark(input) + "ms");
+        System.out.println("PARALLEL  = " + ss.benchmarkParallel(input) + "ms");
         System.out.println(">----------------");
     }
     
