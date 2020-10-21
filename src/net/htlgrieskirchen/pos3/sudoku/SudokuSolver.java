@@ -1,40 +1,30 @@
 package net.htlgrieskirchen.pos3.sudoku;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-/* Please enter here an answer to task four between the tags:
- * <answerTask4>
- *    Hier sollte die Antwort auf die Aufgabe 4 stehen.
- * </answerTask4>
+/* time used for this project: ~ 18 hours
+ * <answerTask1.6>
+ *    It's not faster and I kind of expected it because the program isn't really made for parallel running.
+ *    Or, maybe I just don't see how to actually make it run faster while parallel.
+ *    Also, I was not able to synchronize hasSelectedValue and selecting the Value, so level 2 does not work while parallel.
+ *    All in all, I would appreciate it, if we were to get a solution, I'm stuck on this one.
+ * </answerTask1.6>
  */
 public class SudokuSolver implements ISodukoSolver {
-    
-    private int[][] wrappedSudok;
-    private Cell[][] wrappedSudoku;
     
     private List<Unit> rows;
     private List<Unit> columns;
     private List<Unit> blocks;
     
-    public SudokuSolver(File file) {
-        wrappedSudok = readSudoku(file);
-        wrappedSudoku = wrapSudoku(wrappedSudok);
-        initializeUnits(wrappedSudoku);
-    }
-
-    public int[][] getRawSudoku() {
-        return wrappedSudok;
+    public SudokuSolver() {
     }
 
     @Override
@@ -65,7 +55,8 @@ public class SudokuSolver implements ISodukoSolver {
     }
 
     @Override
-    public boolean checkSudoku() {
+    public boolean checkSudoku(int[][] rawSudoku) {
+        initializeUnits(wrapSudoku(rawSudoku));
         return rows.stream()
                 .map(unit -> unit.isCorrect())
                 .allMatch(unitCorrect -> unitCorrect==true)
@@ -79,113 +70,131 @@ public class SudokuSolver implements ISodukoSolver {
     
 
     @Override
-    public int[][] solveSudoku() {
-        boolean change = false;
+    public int[][] solveSudoku(int[][] rawSudoku) {
+        Cell[][] wrappedSudoku = wrapSudoku(rawSudoku);
+        initializeUnits(wrappedSudoku);
+        
+        boolean changeRows = false;
+        boolean changeColumns = false;
+        boolean changeBlocks = false;
         do{
-            change = rows.stream()
-                    .map(unit -> {
-                        unit.reducePossibleValues();
-                        return unit.tryToSelectValue();
-                    })
-                    .anyMatch(valueSelected -> valueSelected == true)
-                    || columns.stream()
-                    .map(unit -> {
-                        unit.reducePossibleValues();
-                        return unit.tryToSelectValue();
-                    })
-                    .anyMatch(valueSelected -> valueSelected == true)
-                    || blocks.stream()
+            
+            changeRows = rows.stream()
                     .map(unit -> {
                         unit.reducePossibleValues();
                         return unit.tryToSelectValue();
                     })
                     .anyMatch(valueSelected -> valueSelected == true);
-        }while(change);
+            changeColumns = columns.stream()
+                    .map(unit -> {
+                        unit.reducePossibleValues();
+                        return unit.tryToSelectValue();
+                    })
+                    .anyMatch(valueSelected -> valueSelected == true);
+            changeBlocks = blocks.stream()
+                    .map(unit -> {
+                        unit.reducePossibleValues();
+                        return unit.tryToSelectValue();
+                    })
+                    .anyMatch(valueSelected -> valueSelected == true);
+            
+        }while(changeRows||changeColumns||changeBlocks);
         
         return unwrapSudoku(wrappedSudoku);
-//        int[][] solution = new int[9][9];
-//        
-//        List<List<List<Integer>>> possibleNumbers_temp = new ArrayList<>();
-//        
-//        //initialise
-//        for (int row = 0; row < 9; row++) {
-//            possibleNumbers_temp.add(new ArrayList<>());
-//            
-//            for (int column = 0; column < 9; column++) {
-//                possibleNumbers_temp.get(row).add(new ArrayList<>());
-//            
-//                if(rawSudoku[row][column]==0){
-//                    for (int number = 1; number <= 9; number++) {
-//                        possibleNumbers_temp.get(row).get(column).add(number);
-//                    }
-//                }else{
-//                    solution[row][column] = rawSudoku[row][column];
-//                }
-//            }
-//        }
-//        
-//        boolean repeat = true;
-//        while(repeat){
-//            repeat = false;
-//            
-//            //reduce
-//            for (int row = 0; row < 9; row++) {
-//                for (int column = 0; column < 9; column++) {
-//
-//                    if(!possibleNumbers_temp.get(row).get(column).isEmpty()){
-//
-//                        //check row
-//                        for (int innerColumn = 0; innerColumn < 9; innerColumn++) {
-//                            possibleNumbers_temp.get(row).get(column)
-//                                    .remove(Integer.valueOf(solution[row][innerColumn]));
-//                        }
-//
-//                        //check column
-//                        for (int innerRow = 0; innerRow < 9; innerRow++) {
-//                            possibleNumbers_temp.get(row).get(column)
-//                                    .remove(Integer.valueOf(solution[innerRow][column]));
-//                        }
-//
-//                        //check 3x3
-//                        int temp1 = (int)Math.ceil(row/3)*3;
-//                        for (int innerRow = temp1; innerRow < temp1+3; innerRow++) {
-//                            int temp2 = (int)Math.ceil(column/3)*3;
-//                            for(int innerColumn = temp2; innerColumn < temp2+3; innerColumn++)
-//                            possibleNumbers_temp.get(row).get(column)
-//                                    .remove(Integer.valueOf(solution[innerRow][innerColumn]));
-//                        }
-//
-//                    }
-//
-//                }
-//            }
-//        
-//            //fixate
-//            for (int row = 0; row < 9; row++) {
-//                for (int column = 0; column < 9; column++) {
-//
-//                    if(possibleNumbers_temp.get(row).get(column).size()==1){
-//                        solution[row][column] = possibleNumbers_temp.get(row).get(column).get(0);
-//                        possibleNumbers_temp.get(row).get(column).clear();
-//                        repeat = true;
-//                    }
-//
-//                }
-//            }
-//            
-//        }
-//        
-//        return solution;
+
+    }
+    
+    public boolean checkSudokuParallel(int[][]rawSudoku) {
+        Cell[][] wrappedSudoku = wrapSudoku(rawSudoku);
+        initializeUnits(wrappedSudoku);
+        
+        ExecutorService executor =
+                Executors.newCachedThreadPool();
+
+        List<CheckerCallable> tasks = new ArrayList<>();
+        
+        tasks.add(new CheckerCallable(rows));
+        tasks.add(new CheckerCallable(columns));
+        tasks.add(new CheckerCallable(blocks));
+        
+        boolean correct = false;
+        try {
+            List<Future<Boolean>> corrects = executor.invokeAll(tasks);
+            executor.shutdown();
+            
+            correct = corrects.stream()
+                    .map(future -> {
+                        try{
+                            return future.get();
+                        } catch(InterruptedException ex){
+                            ex.printStackTrace();
+                        } catch (ExecutionException ex) {
+                            ex.printStackTrace();
+                        }
+                        return false;
+                    })
+                    .allMatch(isCorrect -> isCorrect==true);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        
+        return correct;
     }
     
     @Override
-    public int[][] solveSudokuParallel() {
-        // implement this method
-        return new int[0][0]; // delete this line!
-    }
-    
-    public long benchmark(){
-        return 0; //TODO
+    public int[][] solveSudokuParallel(int[][] rawSudoku) {
+        Cell[][] wrappedSudoku = wrapSudoku(rawSudoku);
+        initializeUnits(wrappedSudoku);
+        
+        ExecutorService executor =
+                Executors.newCachedThreadPool();
+
+        List<ReducerCallable> tasksReduce = new ArrayList<>();
+        List<SelecterCallable> tasksSelect = new ArrayList<>();
+        
+        tasksReduce.add(new ReducerCallable(rows));
+        tasksReduce.add(new ReducerCallable(columns));
+        tasksReduce.add(new ReducerCallable(blocks));
+        
+        tasksSelect.add(new SelecterCallable(rows));
+        tasksSelect.add(new SelecterCallable(columns));
+        tasksSelect.add(new SelecterCallable(blocks));
+        
+        boolean change = false;
+        try {
+            do{
+                //Reduce all
+                List<Future<Boolean>> finished = executor.invokeAll(tasksReduce);
+                finished.forEach(future -> {
+                            try{
+                                future.get();
+                            } catch(InterruptedException ex){
+                                ex.printStackTrace();
+                            } catch (ExecutionException ex) {
+                                ex.printStackTrace();
+                            }
+                        });
+                
+                //Select all
+                List<Future<Boolean>> changes = executor.invokeAll(tasksSelect);
+                change = changes.stream()
+                        .map(future -> {
+                            try{
+                                return future.get();
+                            } catch(InterruptedException ex){
+                                ex.printStackTrace();
+                            } catch (ExecutionException ex) {
+                                ex.printStackTrace();
+                            }
+                            return false;
+                        })
+                        .anyMatch(changed -> changed==true);
+            }while(change);
+            executor.shutdown();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        return unwrapSudoku(wrappedSudoku);
     }
 
     @Override
@@ -263,5 +272,33 @@ public class SudokuSolver implements ISodukoSolver {
         if(exit){
             System.exit(0);
         }
+    }
+    
+    public long benchmark(int[][] rawSudoku){
+        long sum = 0;
+        for(int i = 0; i < 10; i++){
+            long start = System.currentTimeMillis();
+                
+                int[][] output = solveSudoku(rawSudoku);
+                checkSudoku(output);
+            
+            long end = System.currentTimeMillis();
+            sum += end-start;
+        }
+        return sum/10;
+    }
+    
+    public long benchmarkParallel(int[][] rawSudoku){
+        long sum = 0;
+        for(int i = 0; i < 10; i++){
+            long start = System.currentTimeMillis();
+                
+                int[][] output = solveSudokuParallel(rawSudoku);
+                checkSudokuParallel(output);
+            
+            long end = System.currentTimeMillis();
+            sum += end-start;
+        }
+        return sum/10;
     }
 }

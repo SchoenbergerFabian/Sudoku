@@ -20,6 +20,11 @@ public class Unit {
         this.cells = cells;
     }
     
+    public synchronized boolean reduceAndSelect(){
+        reducePossibleValues();
+        return tryToSelectValue();
+    }
+    
     public void reducePossibleValues(){
         cells.stream()
                 .forEach(cell_value -> {
@@ -44,6 +49,9 @@ public class Unit {
     public boolean tryToSelectValue(){
         return cells.stream()
                 .map(cell -> {
+                        if(cell.hasSelectedValue()){
+                            return false;
+                        }
                         if(cell.hasSinglePossibleValue()){
                             return cell.selectValue(cell.getSinglePossibleValue());
                         }else{
@@ -61,7 +69,9 @@ public class Unit {
     
     private boolean isValueOnce(int value){
         return cells.stream()
-                .filter(cell -> cell.getPossibleValues().contains(value))
+                .filter(cell -> {
+                    return cell.getPossibleValues().contains(value)&&!cell.hasSelectedValue();
+                })
                 .count()==1;
     }
 }

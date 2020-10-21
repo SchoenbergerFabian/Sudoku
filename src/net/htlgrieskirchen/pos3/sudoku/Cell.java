@@ -33,10 +33,9 @@ public class Cell {
         return selectedValue;
     }
     
-    public void removePossibleValue(int value){
-        possibleValues.remove(Integer.valueOf(value));
+    public synchronized void removePossibleValue(int value){
+        possibleValues.remove(new Integer(value));
     }
-    
     public List<Integer> getPossibleValues(){
         return this.possibleValues;
     }
@@ -52,15 +51,6 @@ public class Cell {
     
     public int getSinglePossibleValue(){
         return possibleValues.get(0);
-    }
-
-    @Override
-    public String toString() {
-        if(hasSelectedValue()){
-            return " "+selectedValue+" ";
-        }else{
-            return "   ";
-        }
     }
     
 }

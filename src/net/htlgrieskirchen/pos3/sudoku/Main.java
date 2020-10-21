@@ -5,28 +5,37 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        SudokuSolver ss = new SudokuSolver(new File("1_sudoku_level1.csv"));
+        SudokuSolver ss = new SudokuSolver();
+        int[][] input = ss.readSudoku(new File("3_sudoku_level2.csv"));
+        
         
         System.out.println(">--- ORIGINAL ---");
-        System.out.println(getSudoku(ss.getRawSudoku())+'\n');
+        System.out.println(getSudokuString(input)+'\n');
         
-        int[][] output = ss.solveSudoku();
+        int[][] output = ss.solveSudoku(input);
+        //int[][] output = ss.solveSudokuParallel(input);
         System.out.println("\n>--- SOLUTION ---");
-        System.out.println(getSudoku(output)+'\n');
+        System.out.println(getSudokuString(output)+'\n');
         
         System.out.println(">----------------");
-        System.out.println("SOLVED    = " + ss.checkSudoku());
+        System.out.println("SOLVED    = " + ss.checkSudokuParallel(output));
+        System.out.println(">----------------");
+        
+        
+        System.out.println("\n>--- BENCHMARK ---");
+        System.out.println("SINGLE    = " + ss.benchmark(output) + "ms");
+        System.out.println("PARALLEL  = " + ss.benchmarkParallel(output) + "ms");
         System.out.println(">----------------");
     }
     
-    private static String getSudoku(int[][] sudoku){
+    private static String getSudokuString(int[][] sudoku){
         String separator = "+---+---+---++---+---+---++---+---+---+";
         StringBuilder sudokuString = new StringBuilder(separator+"\n");
         
         for (int row = 0; row < sudoku.length; row++) {
             
             if(row+1 != sudoku.length){
-                sudokuString.append(getSudokuRow(sudoku[row])+'\n');
+                sudokuString.append(getSudokuRowString(sudoku[row])+'\n');
 
                 if((row+1)%3 == 0){
                     sudokuString.append(separator.replaceAll("-", "=")+'\n');
@@ -35,7 +44,7 @@ public class Main {
                 }
                 
             }else{
-                sudokuString.append(getSudokuRow(sudoku[row])+'\n'+separator);
+                sudokuString.append(getSudokuRowString(sudoku[row])+'\n'+separator);
             }
             
         }
@@ -43,7 +52,7 @@ public class Main {
         return sudokuString.toString();
     }
     
-    private static String getSudokuRow(int[] row){
+    private static String getSudokuRowString(int[] row){
         String separator = " |";
         StringBuilder rowString = new StringBuilder("| ");
         for (int column = 0; column < row.length; column++) {
