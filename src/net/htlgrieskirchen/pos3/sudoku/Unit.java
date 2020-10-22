@@ -20,10 +20,6 @@ public class Unit {
         this.cells = cells;
     }
     
-    public synchronized boolean reduceAndSelect(){
-        reducePossibleValues();
-        return tryToSelectValue();
-    }
     
     public void reducePossibleValues(){
         cells.stream()
@@ -33,17 +29,6 @@ public class Unit {
                                 .forEach(cell -> cell.removePossibleValue(cell_value.getSelectedValue()));
                     }
                 });
-    }
-    
-    public boolean isCorrect(){
-        Set<Integer> checker = new HashSet<>();
-        cells.stream()
-                .forEach(cell -> {
-                    if(cell.hasSelectedValue()){
-                        checker.add(cell.getSelectedValue());
-                    }
-                });
-        return checker.size()==9;
     }
     
     public boolean tryToSelectValue(){
@@ -73,5 +58,16 @@ public class Unit {
                     return cell.getPossibleValues().contains(value)&&!cell.hasSelectedValue();
                 })
                 .count()==1;
+    }
+    
+    public boolean isCorrect(){
+        Set<Integer> checker = new HashSet<>();
+        cells.stream()
+                .forEach(cell -> {
+                    if(cell.hasSelectedValue()){
+                        checker.add(cell.getSelectedValue());
+                    }
+                });
+        return checker.size()==9;
     }
 }

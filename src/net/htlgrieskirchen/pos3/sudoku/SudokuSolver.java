@@ -188,6 +188,7 @@ public class SudokuSolver implements ISodukoSolver {
                             return false;
                         })
                         .anyMatch(changed -> changed==true);
+                System.out.println(change);
             }while(change);
             executor.shutdown();
         } catch (InterruptedException ex) {

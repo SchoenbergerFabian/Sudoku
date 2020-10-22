@@ -6,14 +6,14 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) {
         SudokuSolver ss = new SudokuSolver();
-        int[][] input = ss.readSudoku(new File("2_sudoku_level1.csv"));
+        int[][] input = ss.readSudoku(new File("1_sudoku_level1.csv"));
         
         
         System.out.println(">--- ORIGINAL ---");
         System.out.println(getSudokuString(input)+'\n');
         
-        int[][] output = ss.solveSudoku(input);
-        //int[][] output = ss.solveSudokuParallel(input);
+        //int[][] output = ss.solveSudoku(input);
+        int[][] output = ss.solveSudokuParallel(input);
         System.out.println("\n>--- SOLUTION ---");
         System.out.println(getSudokuString(output)+'\n');
         
@@ -23,8 +23,8 @@ public class Main {
         
         
         System.out.println("\n>--- BENCHMARK ---");
-        System.out.println("SINGLE    = " + ss.benchmark(input) + "ms");
-        System.out.println("PARALLEL  = " + ss.benchmarkParallel(input) + "ms");
+        //System.out.println("SINGLE    = " + ss.benchmark(input) + "ms");
+        //System.out.println("PARALLEL  = " + ss.benchmarkParallel(input) + "ms");
         System.out.println(">----------------");
     }
     

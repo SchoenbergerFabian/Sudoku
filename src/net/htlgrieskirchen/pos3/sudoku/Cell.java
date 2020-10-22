@@ -25,24 +25,25 @@ public class Cell {
         this.possibleValues = new ArrayList<>();
     }
     
-    public boolean hasSelectedValue(){
-        return selectedValue!=0;
-    }
-    
     public int getSelectedValue(){
         return selectedValue;
     }
     
-    public synchronized void removePossibleValue(int value){
-        possibleValues.remove(new Integer(value));
-    }
-    public List<Integer> getPossibleValues(){
-        return this.possibleValues;
+    public boolean hasSelectedValue(){
+        return selectedValue!=0;
     }
     
     public boolean selectValue(int value){
         this.selectedValue = value;
         return true;
+    }
+    
+    public List<Integer> getPossibleValues(){
+        return this.possibleValues;
+    } 
+    
+    public synchronized void removePossibleValue(int value){
+        possibleValues.remove(new Integer(value));
     }
     
     public boolean hasSinglePossibleValue(){
@@ -52,5 +53,4 @@ public class Cell {
     public int getSinglePossibleValue(){
         return possibleValues.get(0);
     }
-    
 }
