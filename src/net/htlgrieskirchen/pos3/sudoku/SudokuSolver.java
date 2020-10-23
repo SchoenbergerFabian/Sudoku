@@ -10,11 +10,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-/* time used for this project: ~ 18 hours
+/* time used for this project: ~ 20 hours
  * <answerTask1.6>
- *    It's 3x faster and I kind of expected it because I split it into 3 threads
- *    However, I was not able to synchronize hasSelectedValue and selecting the Value, so level 2 does not work while parallel.
- *    So I would appreciate it, if we were to get a solution, I'm stuck on this one.
+ *    It's not faster and I didn't expect that because I thought it would be 3x faster, because I split it into 3 pieces.
  * </answerTask1.6>
  */
 public class SudokuSolver implements ISodukoSolver {
@@ -67,42 +65,6 @@ public class SudokuSolver implements ISodukoSolver {
                 .allMatch(unitCorrect -> unitCorrect==true);
     }
     
-
-    @Override
-    public int[][] solveSudoku(int[][] rawSudoku) {
-        Cell[][] wrappedSudoku = wrapSudoku(rawSudoku);
-        initializeUnits(wrappedSudoku);
-        
-        boolean changeRows = false;
-        boolean changeColumns = false;
-        boolean changeBlocks = false;
-        do{
-            
-            changeRows = rows.stream()
-                    .map(unit -> {
-                        unit.reducePossibleValues();
-                        return unit.tryToSelectValue();
-                    })
-                    .anyMatch(valueSelected -> valueSelected == true);
-            changeColumns = columns.stream()
-                    .map(unit -> {
-                        unit.reducePossibleValues();
-                        return unit.tryToSelectValue();
-                    })
-                    .anyMatch(valueSelected -> valueSelected == true);
-            changeBlocks = blocks.stream()
-                    .map(unit -> {
-                        unit.reducePossibleValues();
-                        return unit.tryToSelectValue();
-                    })
-                    .anyMatch(valueSelected -> valueSelected == true);
-            
-        }while(changeRows||changeColumns||changeBlocks);
-        
-        return unwrapSudoku(wrappedSudoku);
-
-    }
-    
     public boolean checkSudokuParallel(int[][]rawSudoku) {
         Cell[][] wrappedSudoku = wrapSudoku(rawSudoku);
         initializeUnits(wrappedSudoku);
@@ -139,6 +101,41 @@ public class SudokuSolver implements ISodukoSolver {
         
         return correct;
     }
+
+    @Override
+    public int[][] solveSudoku(int[][] rawSudoku) {
+        Cell[][] wrappedSudoku = wrapSudoku(rawSudoku);
+        initializeUnits(wrappedSudoku);
+        
+        boolean changeRows;
+        boolean changeColumns;
+        boolean changeBlocks;
+        do{
+            
+            changeRows = rows.stream()
+                    .map(unit -> {
+                        unit.reducePossibleValues();
+                        return unit.tryToSelectValue();
+                    })
+                    .anyMatch(valueSelected -> valueSelected == true);
+            changeColumns = columns.stream()
+                    .map(unit -> {
+                        unit.reducePossibleValues();
+                        return unit.tryToSelectValue();
+                    })
+                    .anyMatch(valueSelected -> valueSelected == true);
+            changeBlocks = blocks.stream()
+                    .map(unit -> {
+                        unit.reducePossibleValues();
+                        return unit.tryToSelectValue();
+                    })
+                    .anyMatch(valueSelected -> valueSelected == true);
+            
+        }while(changeRows||changeColumns||changeBlocks);
+        
+        return unwrapSudoku(wrappedSudoku);
+
+    }
     
     @Override
     public int[][] solveSudokuParallel(int[][] rawSudoku) {
@@ -159,7 +156,7 @@ public class SudokuSolver implements ISodukoSolver {
         tasksSelect.add(new SelecterCallable(columns));
         tasksSelect.add(new SelecterCallable(blocks));
         
-        boolean change = false;
+        boolean change;
         try {
             do{
                 //Reduce all
@@ -188,18 +185,12 @@ public class SudokuSolver implements ISodukoSolver {
                             return false;
                         })
                         .anyMatch(changed -> changed==true);
-                System.out.println(change);
             }while(change);
             executor.shutdown();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
         return unwrapSudoku(wrappedSudoku);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString(); //TODO
     }
     
     private Cell[][] wrapSudoku(int[][] rawSudoku){

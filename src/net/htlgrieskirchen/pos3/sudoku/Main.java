@@ -22,9 +22,10 @@ public class Main {
         System.out.println(">----------------");
         
         
+        int[][] inputBenchmark = ss.readSudoku(new File("1_sudoku_level1.csv"));
         System.out.println("\n>--- BENCHMARK ---");
-        //System.out.println("SINGLE    = " + ss.benchmark(input) + "ms");
-        //System.out.println("PARALLEL  = " + ss.benchmarkParallel(input) + "ms");
+        System.out.println("SINGLE    = " + ss.benchmark(inputBenchmark) + "ms");
+        System.out.println("PARALLEL  = " + ss.benchmarkParallel(inputBenchmark) + "ms");
         System.out.println(">----------------");
     }
     

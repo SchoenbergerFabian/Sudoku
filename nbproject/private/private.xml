@@ -2,18 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/FILES/Programming/Sudoku/2_sudoku_level1.csv</file>
-            <file>file:/C:/FILES/Programming/Sudoku/src/net/htlgrieskirchen/pos3/sudoku/SudokuSolver.java</file>
-            <file>file:/C:/FILES/Programming/Sudoku/src/net/htlgrieskirchen/pos3/sudoku/Unit.java</file>
-            <file>file:/C:/FILES/Programming/Sudoku/src/net/htlgrieskirchen/pos3/sudoku/Cell.java</file>
-            <file>file:/C:/FILES/Programming/Sudoku/3_sudoku_level2.csv</file>
-            <file>file:/C:/FILES/Programming/Sudoku/src/net/htlgrieskirchen/pos3/sudoku/ReducerCallable.java</file>
-            <file>file:/C:/FILES/Programming/Sudoku/src/net/htlgrieskirchen/pos3/sudoku/SelecterCallable.java</file>
-            <file>file:/C:/FILES/Programming/Sudoku/src/net/htlgrieskirchen/pos3/sudoku/ISodukoSolver.java</file>
-            <file>file:/C:/FILES/Programming/Sudoku/src/net/htlgrieskirchen/pos3/sudoku/Main.java</file>
-            <file>file:/C:/FILES/Programming/Sudoku/1_sudoku_level1.csv</file>
-            <file>file:/C:/FILES/Programming/Sudoku/src/net/htlgrieskirchen/pos3/sudoku/CheckerCallable.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

@@ -20,6 +20,16 @@ public class Unit {
         this.cells = cells;
     }
     
+    public boolean isCorrect(){
+        Set<Integer> checker = new HashSet<>();
+        cells.stream()
+                .forEach(cell -> {
+                    if(cell.hasSelectedValue()){
+                        checker.add(cell.getSelectedValue());
+                    }
+                });
+        return checker.size()==9;
+    }
     
     public void reducePossibleValues(){
         cells.stream()
@@ -39,35 +49,10 @@ public class Unit {
                         }
                         if(cell.hasSinglePossibleValue()){
                             return cell.selectValue(cell.getSinglePossibleValue());
-                        }else{
-                            return cell.getPossibleValues().stream()
-                                    .map(value -> {
-                                        if(isValueOnce(value)){
-                                            return cell.selectValue(value);
-                                        }
-                                        return false;
-                                    }).anyMatch(valueSelected -> valueSelected==true);
                         }
+                        return false;
                 })
                 .anyMatch(valueSelcted -> valueSelcted == true);
     }
     
-    private boolean isValueOnce(int value){
-        return cells.stream()
-                .filter(cell -> {
-                    return cell.getPossibleValues().contains(value)&&!cell.hasSelectedValue();
-                })
-                .count()==1;
-    }
-    
-    public boolean isCorrect(){
-        Set<Integer> checker = new HashSet<>();
-        cells.stream()
-                .forEach(cell -> {
-                    if(cell.hasSelectedValue()){
-                        checker.add(cell.getSelectedValue());
-                    }
-                });
-        return checker.size()==9;
-    }
 }
